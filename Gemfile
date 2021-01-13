@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-git_source(:github) {|repo_name| "https://github.com/ddottyler/oystercard_challenge.git" }
+git_source(:github) { |_repo_name| 'https://github.com/ddottyler/oystercard_challenge.git' }
 
-ruby '3.0.0'
+ruby '2.6.5'
 
-group :test, :development do 
+group :test, :development do
   gem 'rspec'
-end 
+end
