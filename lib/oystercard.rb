@@ -40,7 +40,7 @@ class Oystercard
   end
 
   def start_new_journey(station_name)
-    @current_journey = Journey.new(station_name)
+    @current_journey = Journey.new(entry_station: station_name)
   end
 
   def end_journey

@@ -11,7 +11,6 @@ describe JourneyLog do
   describe '#start_journey' do
     it 'starts a journey' do 
       expect(journey_class).to receive(:new).with(entry_station: station)
-      journey_class.new(station)
       subject.start(station)
     end
   end 
