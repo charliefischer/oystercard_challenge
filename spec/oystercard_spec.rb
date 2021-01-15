@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'oystercard'
+require 'journey'
 
 describe Oystercard do
   let(:station_name) { double :Station_name }
@@ -28,7 +29,7 @@ describe Oystercard do
   describe '#touch_in' do
     it 'should touch in oystercard' do
       subject.top_up(5)
-      expect(subject.touch_in(station_name)).to eq station_name
+      expect(subject.touch_in(station_name).entry_station).to eq station_name
     end
     it 'should raise an error if balance is less than 1' do
       expect { subject.touch_in(station_name) }.to raise_error 'No money'
@@ -52,7 +53,7 @@ describe Oystercard do
     it 'should take off minimum cost when touching out' do
       subject.top_up(5)
       subject.touch_in(station_name)
-      expect { subject.touch_out(station2_name) }.to change { subject.balance }.by(-Oystercard::MINIMUM_CHARGE)
+      expect { subject.touch_out(station2_name) }.to change { subject.balance }.by(-Journey::MINIMUM_FARE)
     end
   end
 
@@ -61,21 +62,12 @@ describe Oystercard do
       subject.top_up(5)
       subject.touch_in(station_name)
       subject.touch_out(station2_name)
-      expect(subject.entry_station).to eq nil
+      expect(subject.current_journey).to eq nil
     end
     it 'should state the name of station you have travelled from' do
       subject.top_up(5)
       subject.touch_in(station_name)
-      expect(subject.entry_station).to eq(station_name)
-    end
-  end
-
-  describe '#exit_station' do
-    it 'will return the station_name on exit' do
-      subject.top_up(5)
-      subject.touch_in(station_name)
-      subject.touch_out(station2_name)
-      expect(subject.exit_station).to eq(station2_name)
+      expect(subject.current_journey.entry_station).to eq(station_name)
     end
   end
 

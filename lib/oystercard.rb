@@ -1,17 +1,13 @@
-# frozen_string_literal: true
+require_relative 'journey'
 
 class Oystercard
   MAXIMUM_BALANCE = 90
 
-  MINIMUM_CHARGE = 1
-
-  attr_reader :balance, :in_travel, :entry_station,
-              :exit_station, :journeys
+  attr_reader :balance, :journeys, :current_journey
 
   def initialize
     @balance = 0
-    @entry_station = nil
-    @exit_station = nil
+    @current_journey = nil
     @journeys = {}
   end
 
@@ -23,24 +19,35 @@ class Oystercard
   def touch_in(station_name)
     raise 'No money' if balance < 1
 
-    @journeys[:entry] = station_name
-    @entry_station = station_name
+    touch_out("Penalty fare") if in_journey?
+
+    start_new_journey(station_name)
   end
 
   def in_journey?
-    @entry_station != nil
+    !!@current_journey
   end
 
   def touch_out(station_name)
-    deduct(MINIMUM_CHARGE)
-    @exit_station = station_name
-    @journeys[:exit] = station_name
-    @entry_station = nil
+    start_new_journey("Penalty fare") if !in_journey?
+    @current_journey.exit_station = station_name
+    end_journey
   end
 
   private
 
   def deduct(amount)
     @balance -= amount
+  end
+
+  def start_new_journey(station_name)
+    @journeys[:entry] = station_name
+    @current_journey = Journey.new(station_name)
+  end
+
+  def end_journey
+    @journeys[:exit] = @current_journey.exit_station
+    deduct(@current_journey.fare)
+    @current_journey = nil
   end
 end
